@@ -87,7 +87,7 @@ jobs:
         build-mode: ${{ matrix.build-mode }}
 
     - name: Build with Maven
-      if: matrix.language == 'java-kotlin' 
+      if: matrix.language == 'java-kotlin'
       run: mvn -B package -DskipTests --file pom.xml
 
     - name: Perform CodeQL Analysis
