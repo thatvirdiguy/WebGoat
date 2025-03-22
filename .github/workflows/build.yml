@@ -11,37 +11,44 @@ on:
             - main
 
 jobs:
-    pre-commit:
-        name: Pre-commit check
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout git repository
-                uses: actions/checkout@v4.1.6
-            -   name: Setup python
-                uses: actions/setup-python@v5
-                with:
-                    python-version: "3.9"
-            -   uses: actions/setup-java@v4
-                with:
-                    distribution: 'temurin'
-                    java-version: '23'
-            -   name: Pre-commit checks
-                uses: pre-commit/action@v3.0.1
-            -   name: Commit and push pre-commit fixes
-                run: |
-                    git config --global user.name "github-actions[bot]"
-                    git config --global user.email "github-actions[bot]@users.noreply.github.com"
-                    
-                    git add -A
-                    if git diff --cached --quiet; then
-                        echo "No changes to commit"
-                    else
-                        git commit -m "chore: apply pre-commit fixes [skip ci]"
-                        git push
-                    fi
-            -   name: pre-commit-c-lite
-                uses: pre-commit-ci/lite-action@v1.1.0
-                if: always()
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@v4.1.6
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '23'
+
+      - name: Install pre-commit (if not using pre-commit/action)
+        run: pip install pre-commit
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files || true
+
+      - name: Commit and push pre-commit fixes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: apply pre-commit fixes [skip ci]"
+            git push
+          fi
+
+      - name: pre-commit-c-lite
+        uses: pre-commit-ci/lite-action@v1.1.0
+        if: always()
     build:
         runs-on: ${{ matrix.os }}
         needs: [ pre-commit ]
