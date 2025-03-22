@@ -27,7 +27,7 @@ jobs:
                     java-version: '23'
             -   name: Pre-commit checks
                 uses: pre-commit/action@v3.0.1
-            - name: Commit and push pre-commit fixes
+            -   name: Commit and push pre-commit fixes
                 run: |
                     git config --global user.name "github-actions[bot]"
                     git config --global user.email "github-actions[bot]@users.noreply.github.com"
